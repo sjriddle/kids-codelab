@@ -24,6 +24,7 @@ as running `python3 some_file.py` yourself.
 """
 
 import contextlib
+import difflib
 import functools
 import http.server
 import io
@@ -31,6 +32,8 @@ import json
 import math
 import os
 import random
+import re
+import socket
 import socketserver
 import sys
 import threading
@@ -58,6 +61,28 @@ _collect = None
 def _register(kind, obj):
     if _collect is not None:
         _collect[kind].append(obj)
+
+
+# Stops a runaway loop (like `while True:`) from freezing the page: we count the
+# lines the child's program runs and gently stop it if it goes on far too long.
+LOOP_LIMIT = 3_000_000
+
+
+class _TooLong(Exception):
+    pass
+
+
+def _make_tracer(limit):
+    counter = [0]
+
+    def tracer(frame, event, arg):
+        if event == "line":
+            counter[0] += 1
+            if counter[0] > limit:
+                raise _TooLong()
+        return tracer
+
+    return tracer
 
 
 # --------------------------------------------------------------------------
@@ -222,14 +247,60 @@ def _new_namespace():
     }
 
 
-def _describe_error(e, code_name="<your code>"):
+# Words the Lab knows about — used to suggest a fix for typos like "fowrard".
+_VOCAB = [
+    "Turtle", "Song", "Robot", "Stage", "range", "random", "math",
+    "forward", "backward", "left", "right", "color", "width", "circle",
+    "dot", "penup", "pendown", "goto", "show", "home",
+    "play", "rest", "tempo", "move", "go_to", "grow", "add", "snapshot",
+    "randint", "choice", "on_key", "on_click", "print",
+]
+
+
+def _friendly_error(etype, message, code):
+    """Turn a Python error into something a 5-7 year old (and parent) can act on."""
+    if etype == "SyntaxError":
+        return "Something isn't quite right with the code here — check for a missing ) or a missing \" mark."
+    if etype == "IndentationError":
+        return "The spaces at the start of this line look off — lines inside a loop need to line up."
+    if etype == "NameError":
+        name = message.split("'")[1] if "'" in message else ""
+        words = set(_VOCAB)
+        for w in re.findall(r"[A-Za-z_]\w*", code or ""):
+            words.add(w)
+        words.discard(name)
+        match = difflib.get_close_matches(name, list(words), n=1, cutoff=0.72)
+        if match:
+            return "I don't know the word '%s' — did you mean '%s'?" % (name, match[0])
+        return ("I don't know the word '%s'. Check the spelling!" % name) if name else None
+    if etype == "AttributeError":
+        # message looks like: 'LabTurtle' object has no attribute 'fowrard'
+        parts = message.split("'")
+        attr = parts[-2] if len(parts) >= 2 else ""
+        match = difflib.get_close_matches(attr, _VOCAB, n=1, cutoff=0.7)
+        if match:
+            return "There's no command called '%s' — did you mean '%s'?" % (attr, match[0])
+        return ("There's no command called '%s'. Check the spelling!" % attr) if attr else None
+    if etype == "TypeError":
+        return "Something got the wrong kind of value — like a word where a number was needed."
+    if etype == "ZeroDivisionError":
+        return "You can't divide by zero — try a different number."
+    if etype == "RuntimeError":
+        return message
+    return None
+
+
+def _describe_error(e, code=""):
     if isinstance(e, SyntaxError):
-        return {"type": "SyntaxError", "message": e.msg, "line": e.lineno}
-    line = None
-    for frame in traceback.extract_tb(e.__traceback__):
-        if frame.filename == code_name:
-            line = frame.lineno
-    return {"type": type(e).__name__, "message": str(e), "line": line}
+        d = {"type": "SyntaxError", "message": e.msg, "line": e.lineno}
+    else:
+        line = None
+        for frame in traceback.extract_tb(e.__traceback__):
+            if frame.filename == "<your code>":
+                line = frame.lineno
+        d = {"type": type(e).__name__, "message": str(e), "line": line}
+    d["friendly"] = _friendly_error(d["type"], d["message"], code)
+    return d
 
 
 def run_code(code):
@@ -239,13 +310,19 @@ def run_code(code):
     out = io.StringIO()
     error = None
     _collect = coll
+    sys.settrace(_make_tracer(LOOP_LIMIT))
     try:
         compiled = compile(code, "<your code>", "exec")
         with contextlib.redirect_stdout(out):
             exec(compiled, ns)              # noqa: S102 (local, trusted, on purpose)
+    except _TooLong:
+        error = {"type": "RuntimeError", "line": None,
+                 "message": "Your program ran for too long — maybe an endless loop? 🐢",
+                 "friendly": "Your program ran for a very long time — check for a loop that never stops. 🐢"}
     except Exception as e:                  # noqa: BLE001
-        error = _describe_error(e)
+        error = _describe_error(e, code)
     finally:
+        sys.settrace(None)
         _collect = None
 
     base = {"ok": error is None, "output": out.getvalue(), "error": error}
@@ -255,7 +332,7 @@ def run_code(code):
         if callable(ns.get("on_key")) or callable(ns.get("on_click")):
             _session_counter += 1
             sid = "s" + str(_session_counter)
-            SESSIONS[sid] = {"ns": ns, "stage": stage}
+            SESSIONS[sid] = {"ns": ns, "stage": stage, "code": code}
             while len(SESSIONS) > 20:
                 SESSIONS.pop(next(iter(SESSIONS)))
             base.update({
@@ -291,14 +368,20 @@ def run_event(sid, ev_type, key=None, x=None, y=None):
     ns, stage = sess["ns"], sess["stage"]
     out = io.StringIO()
     error = None
+    sys.settrace(_make_tracer(LOOP_LIMIT // 6))
     try:
         with contextlib.redirect_stdout(out):
             if ev_type == "key" and callable(ns.get("on_key")):
                 ns["on_key"](key)
             elif ev_type == "click" and callable(ns.get("on_click")):
                 ns["on_click"](x, y)
+    except _TooLong:
+        error = {"type": "RuntimeError", "line": None,
+                 "message": "That took too long — maybe an endless loop? 🐢", "friendly": None}
     except Exception as e:                  # noqa: BLE001
-        error = _describe_error(e)
+        error = _describe_error(e, sess.get("code", ""))
+    finally:
+        sys.settrace(None)
     return {"ok": error is None, "scene": stage.current(), "error": error, "output": out.getvalue()}
 
 
@@ -499,27 +582,45 @@ class LabHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 
-def find_free_port(start=8050, tries=30):
+def find_free_port(host="127.0.0.1", start=8050, tries=30):
     for port in range(start, start + tries):
         try:
-            with socketserver.TCPServer(("127.0.0.1", port), http.server.BaseHTTPRequestHandler):
+            with socketserver.TCPServer((host, port), http.server.BaseHTTPRequestHandler):
                 return port
         except OSError:
             continue
     return start
 
 
+def lan_ip():
+    """Best guess at this computer's address on the home network."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
 def main():
-    port = find_free_port()
-    with socketserver.ThreadingTCPServer(("127.0.0.1", port), LabHandler) as server:
-        url = "http://localhost:" + str(port)
+    # Add --lan to let a tablet/phone on the same wifi reach the Lab.
+    lan = "--lan" in sys.argv
+    host = "0.0.0.0" if lan else "127.0.0.1"
+    port = find_free_port(host)
+    with socketserver.ThreadingTCPServer((host, port), LabHandler) as server:
         print("=" * 54)
         print("  🧪  The Code Lab is OPEN!")
-        print("  Opening your browser at: " + url)
+        print("  On THIS computer:  http://localhost:" + str(port))
+        if lan:
+            print("  📱 On a tablet/phone on the same wifi:")
+            print("        http://" + lan_ip() + ":" + str(port))
+            print("  (While it's open, anyone on your network can use it.)")
         print("  Pick a lesson, then edit the code or wiggle the knobs.")
         print("  When you're done, press  Ctrl + C  here to stop.")
         print("=" * 54)
-        webbrowser.open(url)
+        webbrowser.open("http://localhost:" + str(port))
         try:
             server.serve_forever()
         except KeyboardInterrupt:

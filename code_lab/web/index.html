@@ -10,18 +10,36 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <script>try{if(JSON.parse(localStorage.getItem("codelab:dark")))document.body.classList.add("dark");}catch(e){}</script>
   <!-- Compact top bar: title + which lesson -->
   <header class="topbar">
     <h1>🧪 Code Lab</h1>
     <div class="lesson-controls">
       <select id="lessons" title="Choose a lesson"></select>
       <button id="next" class="btn small" title="Next lesson">Next ▶</button>
-      <button id="reset" class="btn small" title="Put this lesson back the way it started">↺</button>
+      <button id="reset" class="btn small" title="Restore this lesson's starting code">↺</button>
+      <div class="options">
+        <button id="optionsBtn" class="btn small" aria-haspopup="true" aria-expanded="false">⚙️ Options</button>
+        <div id="optionsPanel" class="options-panel" hidden>
+          <label class="opt"><input type="checkbox" id="dark"> 🌗 Dark mode</label>
+          <label class="opt"><input type="checkbox" id="calm"> 🌙 Calm mode <span class="opt-hint">(fewer animations & sounds)</span></label>
+          <hr>
+          <div class="opt-row">
+            <span id="stars" title="Lessons you've finished">⭐ 0/0</span>
+            <button id="resetStars" class="btn small" title="Clear your stars">Reset</button>
+          </div>
+          <hr>
+          <button id="save" class="btn small" title="Save your picture as an image file">💾 Save picture</button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- The mission, read first. Turns GREEN when the child succeeds. -->
-  <div id="goal" class="goal">&nbsp;</div>
+  <!-- The mission, read first. 🔊 reads it aloud; turns GREEN on success. -->
+  <div class="goal-row">
+    <button id="speak" class="icon-btn" title="Read the goal out loud" aria-label="Read the goal out loud">🔊</button>
+    <div id="goal" class="goal">&nbsp;</div>
+  </div>
 
   <div class="lab">
     <!-- LEFT: the controls (knobs first — the youngest child's main tool) -->
@@ -30,6 +48,8 @@
         <div class="panel-title">🎛️ Knobs <span class="tiny">(change the variables)</span></div>
         <div id="knobs" class="knobs"></div>
       </div>
+
+      <div id="palette" class="palette"></div>
 
       <label class="codelabel" for="code">📝 Your code</label>
       <div class="editor">
@@ -51,6 +71,14 @@
     <!-- RIGHT: the output — the star of the show -->
     <section class="right">
       <canvas id="stage" width="760" height="580" tabindex="0"></canvas>
+      <div id="dpad" class="dpad" hidden>
+        <button data-key="up" aria-label="up">⬆️</button>
+        <div class="dpad-mid">
+          <button data-key="left" aria-label="left">⬅️</button>
+          <button data-key="down" aria-label="down">⬇️</button>
+          <button data-key="right" aria-label="right">➡️</button>
+        </div>
+      </div>
       <div id="status">&nbsp;</div>
       <div class="progress" id="progress"><div id="progress-bar"></div></div>
       <pre id="console"></pre>

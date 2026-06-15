@@ -18,6 +18,17 @@ const progressBar = document.getElementById("progress-bar");
 const canvas     = document.getElementById("stage");
 const ctx        = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
+const speakBtn = document.getElementById("speak");
+const saveBtn  = document.getElementById("save");
+const calmEl   = document.getElementById("calm");
+const starsEl  = document.getElementById("stars");
+const paletteEl = document.getElementById("palette");
+const dpadEl   = document.getElementById("dpad");
+const darkEl   = document.getElementById("dark");
+const optionsBtn = document.getElementById("optionsBtn");
+const optionsPanel = document.getElementById("optionsPanel");
+const resetStarsBtn = document.getElementById("resetStars");
+let errorShown = false;
 
 let LESSONS = [];
 let currentIndex = 0;
@@ -29,6 +40,149 @@ const COLORS = [
   "deeppink", "hotpink", "pink", "cyan", "saddlebrown", "brown",
   "black", "gray", "white",
 ];
+
+// ===========================================================================
+// Remembering things in the browser + read-aloud + calm mode + save picture.
+// ===========================================================================
+function lsGet(key, fallback) {
+  try { const v = localStorage.getItem("codelab:" + key); return v === null ? fallback : JSON.parse(v); }
+  catch (e) { return fallback; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem("codelab:" + key, JSON.stringify(value)); } catch (e) {}
+}
+function lessonKey(les) { return (les.track || "") + "::" + (les.title || ""); }
+function saveCode() { lsSet("code::" + lessonKey(currentLesson()), codeEl.value); }
+
+let doneSet = lsGet("done", []);
+function isDone(les) { return doneSet.indexOf(lessonKey(les)) !== -1; }
+function markDone(les) {
+  const k = lessonKey(les);
+  if (doneSet.indexOf(k) === -1) { doneSet.push(k); lsSet("done", doneSet); }
+  refreshStars();
+}
+function refreshStars() {
+  starsEl.textContent = "⭐ " + doneSet.length + "/" + LESSONS.length;
+  Array.from(lessonsEl.options).forEach((opt) => {
+    const les = LESSONS[Number(opt.value)];
+    if (!les) return;
+    opt.textContent = (isDone(les) ? "⭐ " : "") + (les.emoji ? les.emoji + " " : "") + les.title;
+  });
+}
+
+// Calm mode: fewer animations & sounds (auto-on if the OS asks for reduced motion).
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+calmEl.checked = lsGet("calm", false);
+calmEl.addEventListener("change", () => lsSet("calm", calmEl.checked));
+function calmMode() { return calmEl.checked || reduceMotion.matches; }
+
+// Dark mode (the inline script in index.html applies it early to avoid a flash).
+function applyDark(on) { document.body.classList.toggle("dark", on); }
+darkEl.checked = lsGet("dark", false);
+applyDark(darkEl.checked);
+darkEl.addEventListener("change", () => { applyDark(darkEl.checked); lsSet("dark", darkEl.checked); });
+
+// The ⚙️ Options menu: open/close (click outside or Esc closes it).
+function setMenu(open) {
+  optionsPanel.hidden = !open;
+  optionsBtn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+optionsBtn.addEventListener("click", (e) => { e.stopPropagation(); setMenu(optionsPanel.hidden); });
+document.addEventListener("click", (e) => {
+  if (!optionsPanel.hidden && !e.target.closest(".options")) setMenu(false);
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(false); });
+
+// Clear all stars and start fresh.
+resetStarsBtn.addEventListener("click", () => {
+  if (window.confirm("Clear all your ⭐ stars and start fresh?")) {
+    doneSet = [];
+    lsSet("done", []);
+    refreshStars();
+  }
+});
+
+// Read the goal out loud (uses the browser's built-in voice).
+function speakGoal() {
+  if (!("speechSynthesis" in window)) return;
+  const text = (currentLesson().goal || "").trim();
+  if (!text) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95; u.pitch = 1.05; u.lang = "en-US";
+  window.speechSynthesis.speak(u);
+}
+speakBtn.addEventListener("click", speakGoal);
+
+// Save the picture as a PNG (painting its background colour in first).
+saveBtn.addEventListener("click", () => {
+  const out = document.createElement("canvas");
+  out.width = W; out.height = H;
+  const octx = out.getContext("2d");
+  octx.fillStyle = currentBg || "#fff";
+  octx.fillRect(0, 0, W, H);
+  octx.drawImage(canvas, 0, 0);
+  const link = document.createElement("a");
+  link.download = "my-code-lab-picture.png";
+  link.href = out.toDataURL("image/png");
+  link.click();
+});
+
+// ---- command palette: tap a chip to add a real line of code (no typing) ----
+function findVar(code, ctorRegex, fallback) {
+  const m = code.match(new RegExp("(\\w+)\\s*=\\s*" + ctorRegex));
+  return m ? m[1] : fallback;
+}
+function buildPalette() {
+  paletteEl.innerHTML = "";
+  const code = codeEl.value;
+  const track = currentLesson().track || "";
+  let chips = [];
+  if (track.indexOf("Draw") >= 0) {
+    const t = findVar(code, "Turtle\\(", "t");
+    chips = [["▶ forward", t + ".forward(100)"], ["↻ right", t + ".right(90)"],
+             ["↺ left", t + ".left(90)"], ["🎨 color", t + '.color("red")'],
+             ["⭕ circle", t + ".circle(60)"], ["• dot", t + '.dot(30, "gold")']];
+  } else if (track.indexOf("Music") >= 0) {
+    const s = findVar(code, "Song\\(", "song");
+    chips = [["🎵 play C", s + '.play("C", 1)'], ["🎵 play G", s + '.play("G", 1)'],
+             ["🤫 rest", s + ".rest(1)"]];
+  } else if (track.indexOf("Maze") >= 0) {
+    const r = findVar(code, "Robot\\(", "robot");
+    chips = [["▶ forward", r + ".forward(1)"], ["↻ right", r + ".right()"], ["↺ left", r + ".left()"]];
+  } else if (track.indexOf("Move") >= 0) {
+    const stage = findVar(code, "Stage\\(", "stage");
+    const m = code.match(/(\w+)\s*=\s*\w+\.add\(/);
+    const sp = m ? m[1] : "hero";
+    chips = [["→ right", sp + ".move(20, 0)"], ["↑ up", sp + ".move(0, 20)"],
+             ["🔎 grow", sp + ".grow(10)"], ["➕ character", stage + '.add("🐶", 0, 0)']];
+  } else {
+    return;   // the Play track is function-based — no simple chips
+  }
+  const label = document.createElement("span");
+  label.className = "palette-label";
+  label.textContent = "➕ Add:";
+  paletteEl.appendChild(label);
+  chips.forEach(([text, snippet]) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = text;
+    b.addEventListener("click", () => insertSnippet(snippet));
+    paletteEl.appendChild(b);
+  });
+}
+function insertSnippet(snippet) {
+  codeEl.value = codeEl.value.replace(/\s+$/, "") + "\n" + snippet + "\n";
+  syncHighlight();
+  buildKnobs();
+  saveCode();
+  run(true);   // show what the new command did, right away
+}
+
+// ---- on-screen arrows for the Play track (so a tablet needs no keyboard) ----
+dpadEl.querySelectorAll("button").forEach((b) => {
+  b.addEventListener("click", () => sendEvent({ type: "key", key: b.dataset.key }));
+});
 
 // ===========================================================================
 // Load lessons and fill the dropdown (grouped by track).
@@ -50,7 +204,14 @@ fetch("/lessons")
       opt.textContent = (les.emoji ? les.emoji + " " : "") + les.title;
       group.appendChild(opt);
     });
-    loadLesson(0);
+    refreshStars();
+    const lastKey = lsGet("last", null);
+    let startIdx = 0;
+    if (lastKey) {
+      const idx = LESSONS.findIndex(le => lessonKey(le) === lastKey);
+      if (idx >= 0) startIdx = idx;
+    }
+    loadLesson(startIdx);
   })
   .catch(() => { statusEl.textContent = "Could not reach the Code Lab server."; });
 
@@ -60,19 +221,26 @@ function loadLesson(i) {
   currentIndex = i;
   lessonsEl.value = i;
   const les = LESSONS[i];
-  codeEl.value = les.code;
+  const saved = lsGet("code::" + lessonKey(les), null);
+  codeEl.value = (saved !== null) ? saved : les.code;
   goalEl.textContent = (les.emoji ? les.emoji + "  " : "") + (les.goal || "");
   tipBodyEl.textContent = les.tip || "";
+  lsSet("last", lessonKey(les));
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   syncHighlight();
   buildKnobs();
+  buildPalette();
   run(false);
 }
 
 lessonsEl.addEventListener("change", () => loadLesson(Number(lessonsEl.value)));
 document.getElementById("next").addEventListener("click", () => loadLesson((currentIndex + 1) % LESSONS.length));
-document.getElementById("reset").addEventListener("click", () => loadLesson(currentIndex));
-document.getElementById("run").addEventListener("click", () => { buildKnobs(); run(true); });
-codeEl.addEventListener("change", buildKnobs);
+document.getElementById("reset").addEventListener("click", () => {
+  lsSet("code::" + lessonKey(LESSONS[currentIndex]), null);   // forget my edits, restore the starter
+  loadLesson(currentIndex);
+});
+document.getElementById("run").addEventListener("click", () => { buildKnobs(); buildPalette(); run(true); });
+codeEl.addEventListener("change", () => { buildKnobs(); buildPalette(); saveCode(); });
 codeEl.addEventListener("input", syncHighlight);
 codeEl.addEventListener("scroll", () => {
   hlEl.scrollTop = codeEl.scrollTop;
@@ -110,7 +278,17 @@ function renderHighlight(name) {
   hlEl.scrollTop = codeEl.scrollTop;
   hlEl.scrollLeft = codeEl.scrollLeft;
 }
-function syncHighlight() { renderHighlight(null); updateGutter(); }
+function syncHighlight() { errorShown = false; renderHighlight(null); updateGutter(); }
+function renderErrorLine(lineNo) {
+  const lines = codeEl.value.split("\n");
+  hlEl.innerHTML = lines.map((line, i) => {
+    const safe = escapeHtml(line) || " ";
+    return (i === lineNo - 1) ? '<mark class="err">' + safe + "</mark>" : safe;
+  }).join("\n");
+  hlEl.scrollTop = codeEl.scrollTop;
+  hlEl.scrollLeft = codeEl.scrollLeft;
+  errorShown = true;
+}
 function updateGutter() {
   const count = codeEl.value.split("\n").length;
   let nums = "";
@@ -235,10 +413,12 @@ function cheer(message, opts) {
   progressEl.classList.add("done");
   statusEl.textContent = message;
   if (!celebrateRun) return;            // lesson just auto-loaded — show result, no party
+  goalEl.classList.add("solved");       // the goal banner turns GREEN
+  markDone(currentLesson());            // earn a ⭐ for this lesson
+  if (calmMode()) return;               // calm mode: green + star, but no confetti/pop/chime
   statusEl.classList.remove("celebrate");
   void statusEl.offsetWidth;            // restart the pop animation
   statusEl.classList.add("celebrate");
-  goalEl.classList.add("solved");       // the goal banner turns GREEN
   confetti();
   if (opts.chime) chime();
 }
@@ -292,6 +472,7 @@ function chime() {
 function run(userInitiated) {
   celebrateRun = !!userInitiated;
   stopEverything();
+  saveCode();
   goalEl.classList.remove("solved");
   statusEl.textContent = "Working...";
   consoleEl.className = "";
@@ -306,14 +487,17 @@ function run(userInitiated) {
       consoleEl.textContent = (result.output || "").replace(/\s+$/g, "");
       if (!result.ok && result.error) {
         const e = result.error;
-        const where = e.line ? (" on line " + e.line) : "";
-        consoleEl.textContent += "\nOops" + where + ":  " + e.type + ": " + e.message;
+        const msg = e.friendly || (e.type + ": " + e.message);
+        const detail = e.line ? ("  (line " + e.line + ")") : "";
+        consoleEl.textContent += (consoleEl.textContent ? "\n" : "") + "🤔 " + msg + detail;
         consoleEl.className = "error";
         statusEl.textContent = "🤔 Let's fix it!";
+        if (e.line) renderErrorLine(e.line);
         ctx.clearRect(0, 0, W, H);
         setProgress(0); progressEl.classList.remove("done");
         return;
       }
+      if (errorShown) syncHighlight();    // clear a previous red error line
       currentBg = result.background || "#fff";
       canvas.style.background = currentBg;
       progressEl.classList.remove("done"); setProgress(0);
@@ -342,6 +526,7 @@ function stopEverything() {
   musicNodes.forEach(n => { try { n.stop(); } catch (e) {} }); musicNodes = [];
   if (interactiveKey) { canvas.removeEventListener("keydown", interactiveKey); interactiveKey = null; }
   if (interactiveClick) { canvas.removeEventListener("click", interactiveClick); interactiveClick = null; }
+  dpadEl.hidden = true;
   currentSid = null;
 }
 
@@ -580,10 +765,11 @@ function interactiveRender(result) {
   currentSid = result.sid;
   drawScene(result.scene);
   setProgress(0);
+  dpadEl.hidden = !result.handlers.key;   // show the on-screen arrows for tablets
   const how = [];
-  if (result.handlers.key) how.push("use the ARROW KEYS");
+  if (result.handlers.key) how.push("the ARROW KEYS or buttons");
   if (result.handlers.click) how.push("CLICK the picture");
-  statusEl.textContent = how.length ? ("🎮 Click here, then " + how.join(" and ") + "!") : "🎮 Ready!";
+  statusEl.textContent = how.length ? ("🎮 Click here, then use " + how.join(" and ") + "!") : "🎮 Ready!";
 
   if (result.handlers.key) {
     interactiveKey = (e) => {

@@ -3,6 +3,16 @@
 This takes about two minutes. You only do it once to get comfortable; after that,
 starting the Code Lab is a single line.
 
+> ⚡ **Easiest of all — just double-click the launcher** for your computer, in the
+> `learn-to-code-kids` folder (no typing):
+> - **Mac:** `Start Code Lab.command` (first time: right-click → Open to confirm)
+> - **Windows:** `Start Code Lab.bat`
+> - **Linux:** `Start Code Lab.sh` (you may need to mark it executable in the file
+>   manager, or run `bash "Start Code Lab.sh"`)
+>
+> The 3 steps below are the manual way — handy to know once. **On Windows, type
+> `python` instead of `python3`** (and use `\` instead of `/` in the path).
+
 ---
 
 ## Step 1 — Open the Terminal
@@ -21,10 +31,10 @@ In the Terminal, type `cd ` (the letters c-d and a space), then **drag the
 `learn-to-code-kids` folder** from Finder onto the Terminal window (this pastes
 its location), then press **Enter**.
 
-It will look something like:
+It will look something like (your own path will be different):
 
 ```
-cd /Users/peechcraft/Code/learn/learn-to-code-kids
+cd /path/to/learn-to-code-kids
 ```
 
 > ✅ **Check you're in the right place:** type `ls` and press Enter. You should
@@ -69,6 +79,22 @@ rest. Saves typing.
   whenever you like.
 - **You don't need a separate text editor** — all the code editing happens right
   in the Code Lab page.
+
+---
+
+## 📱 Use it on a tablet (optional)
+
+To use the Lab on an iPad on the same wifi, start it with `--lan`:
+
+```
+python3 code_lab/code_lab.py --lan
+```
+
+(On Windows: `python code_lab\code_lab.py --lan`.) It prints an address like
+`http://192.168.1.20:8050` — type that into the
+tablet's browser. The knobs, **command buttons**, and **on-screen arrows** all
+work by touch. (Only do this on a network you trust: while it's open, anyone on
+your wifi can reach it.)
 
 ---
 

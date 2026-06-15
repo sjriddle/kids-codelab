@@ -32,14 +32,52 @@ body { display: flex; flex-direction: column; }
 .lesson-controls #lessons { min-width: 220px; max-width: 60vw; }
 
 /* ---------- the goal: the mission, read first; turns GREEN on success ---------- */
+.goal-row {
+  display: flex; align-items: stretch; gap: 8px;
+  width: 100%; max-width: 1240px; margin: 0 auto 10px;
+  padding: 0 18px;   /* same side gutter as .topbar and .lab so all edges line up */
+}
 .goal {
   font-family: var(--font-fun); font-size: 1.18rem; text-align: center;
   background: #fff4d6; border: 3px solid #ffd166; border-radius: 16px;
-  padding: 12px 18px; color: #7a5c00; line-height: 1.3;
-  width: 100%; max-width: 1240px; margin: 0 auto 10px;
+  padding: 12px 18px; color: #7a5c00; line-height: 1.3; flex: 1 1 auto;
   transition: background .35s ease, border-color .35s ease, color .35s ease;
 }
 .goal.solved { background: #d6f6e4; border-color: #06d6a0; color: #0a6b4d; }
+.icon-btn {
+  flex: 0 0 auto; font-size: 1.4rem; line-height: 1; color: var(--ink);
+  border: 3px solid var(--purple); background: #fff; border-radius: 14px;
+  padding: 0 14px; cursor: pointer;
+}
+.icon-btn:active { transform: translateY(2px); }
+
+.stars { font-family: var(--font-fun); color: #c79a00; font-size: .95rem; white-space: nowrap; }
+.calm {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .9rem; color: #6b5b95; cursor: pointer; white-space: nowrap;
+}
+.output-tools { display: flex; gap: 8px; }
+
+/* Command palette: tap a chip to add a real line of code (no typing needed). */
+.palette { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.palette:empty { display: none; }
+.palette-label { font-family: var(--font-fun); color: #6b5b95; font-size: .9rem; }
+.chip {
+  font-family: var(--font-ui); font-size: .9rem; color: var(--ink);
+  border: 2px solid var(--purple); background: #f3eefe; border-radius: 999px;
+  padding: 5px 11px; cursor: pointer;
+}
+.chip:active { transform: translateY(2px); }
+
+/* On-screen arrows for the Play track (so it works on a tablet, no keyboard). */
+.dpad { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.dpad[hidden] { display: none; }
+.dpad-mid { display: flex; gap: 5px; }
+.dpad button {
+  font-size: 1.5rem; width: 56px; height: 50px; border-radius: 14px;
+  border: 3px solid var(--purple); background: #fff; cursor: pointer; line-height: 1;
+}
+.dpad button:active { transform: translateY(2px); }
 
 /* ---------- the work area: controls (left) + output (right, the hero) ---------- */
 .lab {
@@ -140,6 +178,10 @@ select, .btn, input[type=text] {
   color: transparent; border-radius: 4px;
   animation: knobflash 1.4s ease-out forwards;
 }
+/* the line that caused an error glows steady red until you fix/re-run */
+#code-highlight mark.err {
+  animation: none; background: #ffd9d9; box-shadow: 0 0 0 3px #ff9d9d;
+}
 
 /* Keeps the Run button pinned in view even on short screens. */
 .run-row {
@@ -190,3 +232,54 @@ select, .btn, input[type=text] {
   to   { background: transparent; box-shadow: 0 0 0 3px transparent; }
 }
 .knob-name.flash { border-radius: 6px; animation: knobflash 1.4s ease-out forwards; }
+
+/* Respect the OS "reduce motion" setting: drop the decorative animations. */
+@media (prefers-reduced-motion: reduce) {
+  #status.celebrate { animation: none; }
+  #code-highlight mark { animation: none; }
+  .knob-name.flash { animation: none; }
+  #progress-bar { transition: none; }
+}
+
+/* ---------- ⚙️ Options menu ---------- */
+.options { position: relative; }
+.options-panel {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 50;
+  display: flex; flex-direction: column; gap: 10px; min-width: 220px;
+  background: #fff; border: 3px solid var(--purple); border-radius: 16px;
+  padding: 12px 14px; box-shadow: 0 12px 30px rgba(80, 60, 140, .28); text-align: left;
+}
+.options-panel[hidden] { display: none; }
+.opt { display: flex; align-items: center; gap: 8px; font-size: 1rem; color: var(--ink); cursor: pointer; }
+.opt input { width: 18px; height: 18px; flex: 0 0 auto; }
+.opt-hint { font-size: .8rem; color: #9a8fc0; }
+.opt-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.options-panel hr { border: none; border-top: 2px solid #efe9fb; margin: 0; width: 100%; }
+.options-panel #stars { font-family: var(--font-fun); color: #c79a00; }
+
+/* ---------- 🌗 Dark mode ---------- */
+body.dark {
+  --ink: #e9e2ff;
+  background: linear-gradient(160deg, #1d1830, #131020);
+}
+body.dark .panel { background: #2a244099; }
+body.dark .panel-title, body.dark .codelabel, body.dark .row > label,
+body.dark .opt, body.dark .tip summary, body.dark .tip #tip-body,
+body.dark .palette-label { color: #b9aee6; }
+body.dark select, body.dark .btn, body.dark input[type=text],
+body.dark .icon-btn, body.dark .dpad button,
+body.dark .knob select, body.dark .knob input[type=text],
+body.dark .options-panel { background: #241f3a; color: #e9e2ff; }
+body.dark .btn.run { background: #ffb703; color: #5a3d00; }
+body.dark .chip, body.dark .knob .knob-val { background: #38315a; color: #e9e2ff; }
+body.dark .goal { background: #3a2f12; border-color: #c89a2a; color: #ffd874; }
+body.dark .goal.solved { background: #123726; border-color: #0a9c73; color: #79f0bd; }
+body.dark .editor { background: #1e1a30; }
+body.dark .run-row { background: linear-gradient(to top, #15111f 55%, transparent); }
+body.dark #code { color: #ece6ff; }
+body.dark .gutter { background: #221d38; color: #7d72ad; border-right-color: #3a3358; }
+body.dark .progress { background: #312a4d; border-color: #4a3f73; }
+body.dark #status { color: #5fd9c7; }
+body.dark .options-panel hr { border-top-color: #3a3358; }
+body.dark .opt-hint { color: #8a7fb8; }
+body.dark #code-highlight mark.err { background: #5a2230; box-shadow: 0 0 0 3px #7a2c3e; }

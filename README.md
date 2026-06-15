@@ -19,9 +19,11 @@ play.
 ## 👋 Start here
 
 1. Open **`SETUP.md`** and follow the 3 short steps (about two minutes).
-2. Then just start the Code Lab:
+2. Then just start the Code Lab — **double-click the launcher for your computer**
+   (`Start Code Lab.command` on Mac, `Start Code Lab.bat` on Windows,
+   `Start Code Lab.sh` on Linux), or run it yourself:
    ```
-   python3 code_lab/code_lab.py
+   python3 code_lab/code_lab.py        # on Windows: python code_lab\code_lab.py
    ```
 3. Pick a lesson from the dropdown, read the **goal**, and play. Each lesson has
    a **💡 Grown-up tip** (tap to expand) with what to say and an unplugged warm-up.
@@ -56,8 +58,17 @@ events.**
   in the code. Drag one and the matching **line of code lights up**, so your child
   connects the knob to the code. Great for kids who can't type yet.
 - **📝 Code editor** — the real Python, with line numbers. Edit anything.
+- **➕ Command buttons** — tap a chip to add a real line of code, no typing needed.
 - **▶ Run** — or press **Enter**, or just move a knob. The result draws, plays,
   animates, or becomes a little game on the right, with a progress bar.
+- **🔊 Read-aloud** — tap the speaker to hear the goal read out (great for
+  pre-readers).
+- **💾 Save & ⭐ stickers** — save your picture, earn a star for each finished
+  lesson, and your work is remembered when you come back.
+- **🌙 Calm mode** — fewer animations and sounds (turns on automatically if your
+  device asks for reduced motion).
+- Friendly errors that **name the line and suggest the fix** ("did you mean
+  `forward`?"), and it can't be frozen by a runaway loop.
 
 ---
 
@@ -80,14 +91,18 @@ events.**
 
 ```
 learn-to-code-kids/
-├── README.md            ← you are here
-├── SETUP.md             ← 3 steps to open the Code Lab
-├── kidturtle.py         ← the drawing "engine" (you can ignore this)
-├── code_lab/            ← THE main app: run code_lab/code_lab.py
+├── README.md                ← you are here
+├── SETUP.md                 ← how to open the Code Lab
+├── Start Code Lab.command   ← double-click to launch (Mac)
+├── Start Code Lab.bat       ← double-click to launch (Windows)
+├── Start Code Lab.sh        ← double-click to launch (Linux)
+├── kidturtle.py             ← the drawing "engine" (you can ignore this)
+├── code_lab/                ← THE main app: run code_lab/code_lab.py
 │   ├── code_lab.py
-│   ├── LESSON_PLAN.md   ← the full teaching guide for the Code Lab
-│   └── web/             ← the browser app (HTML/CSS/JS)
-└── extras/              ← the original step-by-step scripts (optional, see below)
+│   ├── test_code_lab.py     ← run to check everything still works
+│   ├── LESSON_PLAN.md       ← the full teaching guide for the Code Lab
+│   └── web/                 ← the browser app (HTML/CSS/JS)
+└── extras/                  ← the original step-by-step scripts (optional, see below)
 ```
 
 ### About `extras/`

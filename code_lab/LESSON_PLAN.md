@@ -26,6 +26,21 @@ When you're done, press **Ctrl + C** in the Terminal.
 
 ---
 
+## Helpful buttons & options
+- **🔊 (next to the goal)** reads the goal out loud — great before your child can
+  read fluently.
+- **➕ Add buttons** (above the code) insert a real line of code with one tap — a
+  gentle on-ramp for kids who can't type yet, between knobs and typing.
+- **💾 Save picture** downloads their creation; finishing a lesson earns a **⭐**
+  (see the count up top), and their edits are remembered when they return.
+- **🌙 Calm** (top right) turns off confetti/pops/sounds for a quieter session;
+  it also switches on by itself if your device is set to "reduce motion."
+- **↺** restores a lesson's original code if things get tangled.
+- If something breaks, the message **names the line and suggests a fix**, and the
+  broken line glows red — a perfect "let's debug together" moment.
+- On a tablet: start with `python3 code_lab/code_lab.py --lan` (see `SETUP.md`);
+  the **on-screen arrows** appear for the Play track so no keyboard is needed.
+
 ## The five tracks (what each teaches + how to guide it)
 
 ### 🎨 Draw — *sequence, loops, variables, lists*
