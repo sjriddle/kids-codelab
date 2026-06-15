@@ -1,0 +1,192 @@
+:root {
+  /* Quicksand = clean & rounded (kid + tech, very readable).
+     Fredoka   = playful & rounded for titles and big buttons.
+     JetBrains Mono = a real coder's font for the code box.
+     Each falls back to the Mac's built-in rounded / mono fonts when offline. */
+  --font-ui:  "Quicksand", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-fun: "Fredoka", "Quicksand", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --purple: #b692f6;
+  --ink: #4a3f6b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0; min-height: 100%;
+  font-family: var(--font-ui);
+  background: linear-gradient(160deg, #fef6ff, #e7f0ff);
+  color: var(--ink);
+}
+
+/* The whole page is a vertical stack: top bar, the goal, then the work area. */
+body { display: flex; flex-direction: column; }
+
+/* ---------- top bar: title + lesson picker ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; padding: 8px 18px; width: 100%; max-width: 1240px; margin: 0 auto;
+}
+.topbar h1 { font-family: var(--font-fun); font-weight: 600; font-size: 1.55rem; margin: 0; }
+.lesson-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lesson-controls #lessons { min-width: 220px; max-width: 60vw; }
+
+/* ---------- the goal: the mission, read first; turns GREEN on success ---------- */
+.goal {
+  font-family: var(--font-fun); font-size: 1.18rem; text-align: center;
+  background: #fff4d6; border: 3px solid #ffd166; border-radius: 16px;
+  padding: 12px 18px; color: #7a5c00; line-height: 1.3;
+  width: 100%; max-width: 1240px; margin: 0 auto 10px;
+  transition: background .35s ease, border-color .35s ease, color .35s ease;
+}
+.goal.solved { background: #d6f6e4; border-color: #06d6a0; color: #0a6b4d; }
+
+/* ---------- the work area: controls (left) + output (right, the hero) ---------- */
+.lab {
+  display: flex; gap: 18px; justify-content: center; align-items: stretch;
+  flex-wrap: wrap; padding: 0 18px 16px; text-align: left;
+  width: 100%; max-width: 1240px; margin: 0 auto;
+}
+.left  { display: flex; flex-direction: column; gap: 10px; width: 400px; max-width: 94vw; }
+.right {
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+  flex: 1 1 480px; min-width: 0; justify-content: flex-start;
+}
+
+/* On a roomy window, fit everything to the screen (output stays big, Run always
+   visible) and give the output the most space. */
+@media (min-width: 940px) {
+  html, body { height: 100%; }
+  body { overflow: hidden; }
+  .lab { flex: 1 1 auto; min-height: 0; flex-wrap: nowrap; }
+  .left, .right { height: 100%; }
+}
+
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.row > label { font-family: var(--font-fun); color: #6b5b95; }
+
+select, .btn, input[type=text] {
+  font-family: var(--font-ui); font-size: 1rem;
+  border-radius: 12px; border: 3px solid var(--purple); background: #fff;
+  padding: 8px 12px; cursor: pointer; color: var(--ink);
+}
+
+.btn.run {
+  font-family: var(--font-fun); font-size: 1.3rem; border: none; color: #5a3d00;
+  background: #ffb703; box-shadow: 0 4px 0 #d99400; padding: 12px 30px; flex: 1;
+}
+.btn.run:active { transform: translateY(3px); box-shadow: none; }
+.btn.small { padding: 6px 12px; font-size: .95rem; }
+.auto {
+  font-size: .95rem; color: #6b5b95; display: flex; align-items: center;
+  gap: 6px; cursor: pointer; white-space: nowrap;
+}
+
+.panel {
+  background: #ffffffcc; border: 3px solid var(--purple); border-radius: 16px;
+  padding: 10px 12px;
+}
+.knobs-panel { max-height: 30vh; overflow: auto; flex: 0 0 auto; }
+.panel-title { font-family: var(--font-fun); color: #6b5b95; margin-bottom: 8px; }
+.tiny { font-family: var(--font-ui); font-weight: normal; font-size: .8rem; color: #9a8fc0; }
+
+.knobs { display: flex; flex-direction: column; gap: 12px; }
+.knob { display: flex; flex-direction: column; gap: 4px; }
+.knob .knob-head { display: flex; justify-content: space-between; align-items: center; }
+.knob .knob-name { font-family: var(--font-fun); color: var(--ink); }
+.knob .knob-val {
+  font-family: var(--font-mono); min-width: 56px; text-align: center;
+  background: #f3eefe; border-radius: 8px; padding: 2px 6px;
+}
+.knob input[type=range] { width: 100%; accent-color: #9b5de5; height: 26px; cursor: pointer; }
+.knob select, .knob input[type=text] {
+  font-family: var(--font-ui); font-size: 1rem; padding: 6px 8px;
+  border: 2px solid var(--purple); border-radius: 10px; color: var(--ink);
+}
+.knobs:empty::after {
+  content: "Knobs appear for any variable like  name = number  at the top of the code.";
+  color: #9a8fc0; font-size: .9rem;
+}
+
+.codelabel { font-family: var(--font-fun); color: #6b5b95; }
+
+/* The editor is a textarea (on top) sitting over a matching highlight layer
+   (behind). The textarea has a see-through background, so a colored band drawn
+   on the layer below shows up behind the matching line of code. */
+.editor {
+  position: relative; display: flex; flex: 1 1 auto; min-height: 120px;
+  border: 3px solid var(--purple); border-radius: 14px; background: #fffdff;
+  overflow: hidden;
+}
+/* Line numbers. Made completely inert: you can't select, edit, copy, or even
+   click them, so copying the code never picks up the numbers. */
+.gutter {
+  flex: 0 0 auto; width: 46px; padding: 12px 8px 12px 0; box-sizing: border-box;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.5;
+  text-align: right; color: #b9a7e0; background: #f6f1ff;
+  border-right: 1px solid #e6dcfb; white-space: pre; overflow: hidden;
+  user-select: none; -webkit-user-select: none; pointer-events: none;
+}
+.code-wrap { position: relative; flex: 1 1 auto; }
+#code, #code-highlight {
+  position: absolute; inset: 0; margin: 0; width: 100%; height: 100%;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.5;
+  padding: 12px; border: 0; tab-size: 4; box-sizing: border-box;
+  white-space: pre; overflow: auto;
+}
+#code { z-index: 1; resize: none; background: transparent; color: #3a2f5b; caret-color: #9b5de5; }
+#code-highlight { z-index: 0; color: transparent; pointer-events: none; user-select: none; }
+#code-highlight mark {
+  color: transparent; border-radius: 4px;
+  animation: knobflash 1.4s ease-out forwards;
+}
+
+/* Keeps the Run button pinned in view even on short screens. */
+.run-row {
+  position: sticky; bottom: 0;
+  background: linear-gradient(to top, #eef1ff 60%, #eef1ff00);
+  padding: 6px 0 2px;
+}
+
+.tip { font-size: .9rem; color: #6b5b95; }
+.tip summary { cursor: pointer; font-family: var(--font-fun); color: #6b5b95; }
+.tip #tip-body { margin-top: 6px; color: #7a6f9b; line-height: 1.35; }
+
+/* ---------- the output: the hero ---------- */
+#stage {
+  background: #fff; border: 8px solid var(--purple); border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(120, 90, 200, .25);
+  width: auto; height: auto; max-width: 100%; max-height: 64dvh;
+}
+#stage:focus { outline: 4px solid #ffd166; outline-offset: 2px; }
+#status { font-family: var(--font-fun); font-size: 1.3rem; min-height: 1.6rem; color: #2a9d8f; }
+@keyframes cheerpop { 0% { transform: scale(.7); } 55% { transform: scale(1.2); } 100% { transform: scale(1); } }
+#status.celebrate { display: inline-block; animation: cheerpop .5s ease-out; }
+
+/* Progress bar — fills up as the output is made. */
+.progress {
+  width: 100%; max-width: 760px; height: 14px; margin: 0 auto;
+  background: #e7defb; border: 2px solid #c9b6f3; border-radius: 999px; overflow: hidden;
+}
+#progress-bar {
+  height: 100%; width: 0%; border-radius: 999px;
+  background: linear-gradient(90deg, #9b5de5, #00bbf9, #00f5d4);
+  transition: width .12s ease-out;
+}
+.progress.done #progress-bar { background: linear-gradient(90deg, #06d6a0, #ffd166); }
+
+#console {
+  width: 100%; max-width: 760px; min-height: 1.4rem; margin: 0;
+  background: #2b2440; color: #e9e2ff; border-radius: 12px; padding: 10px 14px;
+  font-family: var(--font-mono); font-size: 13px; text-align: left; white-space: pre-wrap;
+}
+#console.error { background: #5a1f2e; color: #ffd9e0; }
+#console:empty { display: none; }   /* no dark bar when there's nothing to show */
+
+/* The "which code does this knob change?" highlight: a warm glow that fades.
+   Used both for the code line (the <mark>) and the knob's name label. */
+@keyframes knobflash {
+  from { background: #ffe680; box-shadow: 0 0 0 3px #ffe680; }
+  to   { background: transparent; box-shadow: 0 0 0 3px transparent; }
+}
+.knob-name.flash { border-radius: 6px; animation: knobflash 1.4s ease-out forwards; }

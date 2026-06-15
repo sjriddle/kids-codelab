@@ -1,0 +1,131 @@
+/* Friendly, playful styling for the drawing playground. */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Comic Sans MS", "Chalkboard SE", "Trebuchet MS", sans-serif;
+  background: linear-gradient(160deg, #fef6ff, #e7f0ff);
+  color: #4a3f6b;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin: 16px 0 4px;
+}
+
+.hint {
+  margin: 0 0 16px;
+  color: #7a6f9b;
+  font-size: 1.05rem;
+}
+
+.layout {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 0 12px 30px;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #ffffffcc;
+  border: 4px solid #b692f6;
+  border-radius: 20px;
+  padding: 14px;
+  min-width: 200px;
+}
+
+.group { display: flex; flex-direction: column; gap: 8px; }
+
+.label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #6b5b95;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.swatch {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.swatch.rainbow {
+  background: conic-gradient(red, orange, yellow, green, blue, violet, red);
+}
+
+.swatch.selected,
+.size.selected,
+.stamp.selected {
+  outline: 4px solid #ffb703;
+  transform: scale(1.1);
+}
+
+.sizes, .stamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.size {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 3px solid #b692f6;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #4a3f6b;
+}
+
+.stamp {
+  min-width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 3px solid #b692f6;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1.4rem;
+  padding: 0 8px;
+}
+
+.big-btn {
+  font-family: inherit;
+  font-size: 1.1rem;
+  padding: 12px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.big-btn.clear { background: #ef476f; box-shadow: 0 4px 0 #c43356; }
+.big-btn.save  { background: #06d6a0; box-shadow: 0 4px 0 #04a87c; color:#073b30; }
+.big-btn:active { transform: translateY(3px); box-shadow: none; }
+
+#board {
+  background: #ffffff;
+  border: 8px solid #b692f6;
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(120, 90, 200, .25);
+  cursor: crosshair;
+  touch-action: none;        /* let kids draw on tablets without scrolling */
+  max-width: 92vw;
+  height: auto;
+}

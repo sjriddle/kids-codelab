@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🧪 Code Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Compact top bar: title + which lesson -->
+  <header class="topbar">
+    <h1>🧪 Code Lab</h1>
+    <div class="lesson-controls">
+      <select id="lessons" title="Choose a lesson"></select>
+      <button id="next" class="btn small" title="Next lesson">Next ▶</button>
+      <button id="reset" class="btn small" title="Put this lesson back the way it started">↺</button>
+    </div>
+  </header>
+
+  <!-- The mission, read first. Turns GREEN when the child succeeds. -->
+  <div id="goal" class="goal">&nbsp;</div>
+
+  <div class="lab">
+    <!-- LEFT: the controls (knobs first — the youngest child's main tool) -->
+    <section class="left">
+      <div class="panel knobs-panel">
+        <div class="panel-title">🎛️ Knobs <span class="tiny">(change the variables)</span></div>
+        <div id="knobs" class="knobs"></div>
+      </div>
+
+      <label class="codelabel" for="code">📝 Your code</label>
+      <div class="editor">
+        <div class="gutter" id="gutter" aria-hidden="true"></div>
+        <div class="code-wrap">
+          <pre id="code-highlight" aria-hidden="true"></pre>
+          <textarea id="code" wrap="off" spellcheck="false" autocomplete="off"></textarea>
+        </div>
+      </div>
+
+      <div class="row run-row">
+        <button id="run" class="btn run">▶ Run</button>
+        <label class="auto"><input type="checkbox" id="autorun" checked> Run when I move a knob</label>
+      </div>
+
+      <details id="tip" class="tip"><summary>💡 Grown-up tip</summary><div id="tip-body"></div></details>
+    </section>
+
+    <!-- RIGHT: the output — the star of the show -->
+    <section class="right">
+      <canvas id="stage" width="760" height="580" tabindex="0"></canvas>
+      <div id="status">&nbsp;</div>
+      <div class="progress" id="progress"><div id="progress-bar"></div></div>
+      <pre id="console"></pre>
+    </section>
+  </div>
+
+  <script src="lab.js"></script>
+</body>
+</html>

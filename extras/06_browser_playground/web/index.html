@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Drawing Playground 🎨</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🎨 My Drawing Playground</h1>
+  <p class="hint">Click and drag on the white board to draw. Pick a color or a stamp!</p>
+
+  <div class="layout">
+    <!-- The color and tool buttons -->
+    <div class="toolbar">
+      <div class="group">
+        <div class="label">Colors</div>
+        <div class="swatches">
+          <button class="swatch" style="background:#e63946" data-color="#e63946"></button>
+          <button class="swatch" style="background:#f3722c" data-color="#f3722c"></button>
+          <button class="swatch" style="background:#f9c74f" data-color="#f9c74f"></button>
+          <button class="swatch" style="background:#43aa8b" data-color="#43aa8b"></button>
+          <button class="swatch" style="background:#277da1" data-color="#277da1"></button>
+          <button class="swatch" style="background:#9b5de5" data-color="#9b5de5"></button>
+          <button class="swatch" style="background:#ff70a6" data-color="#ff70a6"></button>
+          <button class="swatch" style="background:#222222" data-color="#222222"></button>
+          <button class="swatch rainbow" data-color="rainbow" title="Rainbow!">🌈</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="label">Brush size</div>
+        <div class="sizes">
+          <button class="size" data-size="6">•</button>
+          <button class="size" data-size="16">●</button>
+          <button class="size selected" data-size="30">⬤</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="label">Stamps</div>
+        <div class="stamps">
+          <button class="stamp" data-stamp="">✏️ Draw</button>
+          <button class="stamp" data-stamp="⭐">⭐</button>
+          <button class="stamp" data-stamp="🐢">🐢</button>
+          <button class="stamp" data-stamp="❤️">❤️</button>
+          <button class="stamp" data-stamp="🌸">🌸</button>
+          <button class="stamp" data-stamp="🦖">🦖</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <button id="clear" class="big-btn clear">🧽 Clear</button>
+        <button id="save" class="big-btn save">💾 Save</button>
+      </div>
+    </div>
+
+    <!-- The drawing board -->
+    <canvas id="board" width="760" height="560"></canvas>
+  </div>
+
+  <script src="playground.js"></script>
+</body>
+</html>
