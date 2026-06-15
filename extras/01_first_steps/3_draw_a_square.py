@@ -4,6 +4,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -12,13 +13,13 @@ t = Turtle()
 t.color("green")
 t.width(6)
 
-t.forward(150)        # side 1
-t.right(90)           # turn the corner
-t.forward(150)        # side 2
-t.right(90)           # turn the corner
-t.forward(150)        # side 3
-t.right(90)           # turn the corner
-t.forward(150)        # side 4
+t.forward(150)  # side 1
+t.right(90)  # turn the corner
+t.forward(150)  # side 2
+t.right(90)  # turn the corner
+t.forward(150)  # side 3
+t.right(90)  # turn the corner
+t.forward(150)  # side 4
 
 t.show("My Square")
 

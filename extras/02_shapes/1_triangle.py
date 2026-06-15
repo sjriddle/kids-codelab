@@ -3,6 +3,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -11,11 +12,11 @@ t = Turtle()
 t.color("red")
 t.width(6)
 
-t.forward(180)        # side 1
-t.left(120)           # turn
-t.forward(180)        # side 2
-t.left(120)           # turn
-t.forward(180)        # side 3
+t.forward(180)  # side 1
+t.left(120)  # turn
+t.forward(180)  # side 2
+t.left(120)  # turn
+t.forward(180)  # side 3
 
 t.show("My Triangle")
 

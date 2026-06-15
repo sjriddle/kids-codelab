@@ -28,13 +28,15 @@ def find_free_port(start=8000, tries=20):
             with socketserver.TCPServer(("", port), http.server.BaseHTTPRequestHandler):
                 return port
         except OSError:
-            continue          # that port was busy, try the next one
+            continue  # that port was busy, try the next one
     return start
 
 
 def main():
     port = find_free_port()
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=WEB_FOLDER)
+    handler = functools.partial(
+        http.server.SimpleHTTPRequestHandler, directory=WEB_FOLDER
+    )
 
     with socketserver.ThreadingTCPServer(("", port), handler) as server:
         url = "http://localhost:" + str(port)

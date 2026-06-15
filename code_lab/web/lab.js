@@ -66,7 +66,7 @@ function refreshStars() {
   Array.from(lessonsEl.options).forEach((opt) => {
     const les = LESSONS[Number(opt.value)];
     if (!les) return;
-    opt.textContent = (isDone(les) ? "⭐ " : "") + (les.emoji ? les.emoji + " " : "") + les.title;
+    opt.textContent = (isDone(les) ? "✅ " : "") + (les.emoji ? les.emoji + " " : "") + les.title;
   });
 }
 
@@ -75,6 +75,10 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 calmEl.checked = lsGet("calm", false);
 calmEl.addEventListener("change", () => lsSet("calm", calmEl.checked));
 function calmMode() { return calmEl.checked || reduceMotion.matches; }
+
+// "Run when I move a knob" — on by default, and remembered if turned off.
+autorunEl.checked = lsGet("autorun", true);
+autorunEl.addEventListener("change", () => lsSet("autorun", autorunEl.checked));
 
 // Dark mode (the inline script in index.html applies it early to avoid a flash).
 function applyDark(on) { document.body.classList.toggle("dark", on); }

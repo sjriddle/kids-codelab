@@ -4,16 +4,18 @@
 
 import time
 
-CYAN   = "\033[96m"
+CYAN = "\033[96m"
 YELLOW = "\033[93m"
-GREEN  = "\033[92m"
+GREEN = "\033[92m"
 PURPLE = "\033[95m"
-BOLD   = "\033[1m"
-END    = "\033[0m"
+BOLD = "\033[1m"
+END = "\033[0m"
+
 
 def say(text, color=CYAN):
     print(color + BOLD + text + END)
     time.sleep(0.6)
+
 
 say("\n🏰 You are standing in a magic castle.")
 say("There are two doors: a RED door and a BLUE door.")

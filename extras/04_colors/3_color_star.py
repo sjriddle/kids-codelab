@@ -4,6 +4,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -14,9 +15,9 @@ t.width(5)
 star_colors = ["red", "gold", "limegreen", "deepskyblue", "violet"]
 
 for point in range(5):
-    t.color(star_colors[point])   # a new color for each of the 5 points
+    t.color(star_colors[point])  # a new color for each of the 5 points
     t.forward(250)
-    t.right(144)                  # the magic star angle!
+    t.right(144)  # the magic star angle!
 
 t.show("Rainbow Star")
 

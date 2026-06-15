@@ -4,12 +4,12 @@
 
 import time
 
-RED    = "\033[91m"
+RED = "\033[91m"
 YELLOW = "\033[93m"
-GREEN  = "\033[92m"
-CYAN   = "\033[96m"
-BOLD   = "\033[1m"
-END    = "\033[0m"
+GREEN = "\033[92m"
+CYAN = "\033[96m"
+BOLD = "\033[1m"
+END = "\033[0m"
 
 print(CYAN + BOLD + "\n   Get ready to launch! 🚀\n" + END)
 time.sleep(1)
@@ -17,7 +17,7 @@ time.sleep(1)
 # Count down: 5, 4, 3, 2, 1
 for number in [5, 4, 3, 2, 1]:
     print(YELLOW + BOLD + "        " + str(number) + " ..." + END)
-    time.sleep(1)        # wait one second
+    time.sleep(1)  # wait one second
 
 print(RED + BOLD + "\n        BLAST OFF!\n" + END)
 time.sleep(0.5)

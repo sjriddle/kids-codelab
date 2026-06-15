@@ -5,14 +5,14 @@
 import time
 
 # These are secret codes that turn the text different colors in the Terminal.
-RED     = "\033[91m"
-YELLOW  = "\033[93m"
-GREEN   = "\033[92m"
-CYAN    = "\033[96m"
-BLUE    = "\033[94m"
-PURPLE  = "\033[95m"
-BOLD    = "\033[1m"
-END     = "\033[0m"     # this one turns the color back to normal
+RED = "\033[91m"
+YELLOW = "\033[93m"
+GREEN = "\033[92m"
+CYAN = "\033[96m"
+BLUE = "\033[94m"
+PURPLE = "\033[95m"
+BOLD = "\033[1m"
+END = "\033[0m"  # this one turns the color back to normal
 
 rainbow = [RED, YELLOW, GREEN, CYAN, BLUE, PURPLE]
 
@@ -25,7 +25,7 @@ greeting = "Hello, " + name + "! You are a coder now!"
 print()
 colored = ""
 for i in range(len(greeting)):
-    color = rainbow[i % len(rainbow)]      # next rainbow color for each letter
+    color = rainbow[i % len(rainbow)]  # next rainbow color for each letter
     colored = colored + color + greeting[i]
 print(BOLD + colored + END)
 print()

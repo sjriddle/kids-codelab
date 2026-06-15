@@ -4,6 +4,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -14,8 +15,8 @@ t.width(6)
 
 # "for ... in range(4):" means "repeat the indented lines 4 times."
 for side in range(4):
-    t.forward(150)    # walk one side
-    t.right(90)       # turn the corner
+    t.forward(150)  # walk one side
+    t.right(90)  # turn the corner
     # ^ These two lines run 4 times. That's a whole square!
 
 t.show("Square Made With a Loop")

@@ -5,6 +5,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -18,7 +19,7 @@ if answer.isdigit() and int(answer) >= 3:
     sides = int(answer)
 else:
     print("Hmm, I'll pick 5 sides for you!")
-    sides = 5      # a friendly fallback so the program always works
+    sides = 5  # a friendly fallback so the program always works
 
 # Ask for a color, with a safe default.
 color = input("What color? (like red, blue, green, gold): ").strip().lower()
@@ -36,8 +37,14 @@ for side in range(sides):
     t.forward(160)
     t.right(turn)
 
-names = {3: "triangle", 4: "square", 5: "pentagon",
-         6: "hexagon", 7: "heptagon", 8: "octagon"}
+names = {
+    3: "triangle",
+    4: "square",
+    5: "pentagon",
+    6: "hexagon",
+    7: "heptagon",
+    8: "octagon",
+}
 shape_name = names.get(sides, "shape")
 print("Drawing your " + color + " " + shape_name + "! 🎨")
 

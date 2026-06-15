@@ -4,6 +4,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -14,7 +15,7 @@ t.width(4)
 # A LIST is a bunch of things kept together, inside [ ].
 rainbow = ["red", "orange", "gold", "green", "blue", "purple"]
 
-length = 5            # how long the next line will be (it grows!)
+length = 5  # how long the next line will be (it grows!)
 
 for step in range(60):
     # Pick a color from the list, looping back to the start when we run out.
@@ -22,8 +23,8 @@ for step in range(60):
     color = rainbow[step % len(rainbow)]
     t.color(color)
     t.forward(length)
-    t.right(59)       # a tiny bit less than 60 makes it spiral
-    length = length + 4   # each line is a little longer than the last
+    t.right(59)  # a tiny bit less than 60 makes it spiral
+    length = length + 4  # each line is a little longer than the last
 
 t.show("Rainbow Spiral")
 

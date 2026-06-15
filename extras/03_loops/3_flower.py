@@ -4,6 +4,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -14,8 +15,8 @@ t.width(2)
 
 # Draw 9 petals all the way around.
 for petal in range(9):
-    t.circle(70)      # draw one round petal
-    t.right(40)       # 9 petals × 40 degrees = a full circle of petals
+    t.circle(70)  # draw one round petal
+    t.right(40)  # 9 petals × 40 degrees = a full circle of petals
 
 # Put a sunny dot in the middle.
 t.dot(40, "gold")

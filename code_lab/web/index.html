@@ -17,12 +17,12 @@
     <div class="lesson-controls">
       <select id="lessons" title="Choose a lesson"></select>
       <button id="next" class="btn small" title="Next lesson">Next ▶</button>
-      <button id="reset" class="btn small" title="Restore this lesson's starting code">↺</button>
       <div class="options">
         <button id="optionsBtn" class="btn small" aria-haspopup="true" aria-expanded="false">⚙️ Options</button>
         <div id="optionsPanel" class="options-panel" hidden>
           <label class="opt"><input type="checkbox" id="dark"> 🌗 Dark mode</label>
           <label class="opt"><input type="checkbox" id="calm"> 🌙 Calm mode <span class="opt-hint">(fewer animations & sounds)</span></label>
+          <label class="opt"><input type="checkbox" id="autorun" checked> ▶ Run when I move a knob</label>
           <hr>
           <div class="opt-row">
             <span id="stars" title="Lessons you've finished">⭐ 0/0</span>
@@ -62,7 +62,7 @@
 
       <div class="row run-row">
         <button id="run" class="btn run">▶ Run</button>
-        <label class="auto"><input type="checkbox" id="autorun" checked> Run when I move a knob</label>
+        <button id="reset" class="btn reset" title="Restore this lesson's starting code">↺ Reset</button>
       </div>
 
       <details id="tip" class="tip"><summary>💡 Grown-up tip</summary><div id="tip-body"></div></details>

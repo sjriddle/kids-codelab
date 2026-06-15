@@ -101,13 +101,15 @@ class Turtle:
 
     def dot(self, size=12, color=None):
         """Stamp a round dot right where the turtle is standing."""
-        self._ops.append({
-            "type": "dot",
-            "x": self.x,
-            "y": self.y,
-            "r": size / 2.0,
-            "color": color if color else self.pen_color,
-        })
+        self._ops.append(
+            {
+                "type": "dot",
+                "x": self.x,
+                "y": self.y,
+                "r": size / 2.0,
+                "color": color if color else self.pen_color,
+            }
+        )
 
     def circle(self, radius, steps=60):
         """Draw a circle by taking lots of tiny steps and small turns."""
@@ -125,7 +127,11 @@ class Turtle:
         html = _build_html(self._ops, self.background, title)
         # Save the picture to a temporary file and open it in the browser.
         handle = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".html", prefix="kidturtle_", delete=False, encoding="utf-8"
+            mode="w",
+            suffix=".html",
+            prefix="kidturtle_",
+            delete=False,
+            encoding="utf-8",
         )
         handle.write(html)
         handle.close()
@@ -148,23 +154,27 @@ class Turtle:
 
     def _move_to(self, new_x, new_y):
         if self.pen_down:
-            self._ops.append({
-                "type": "line",
-                "x1": self.x,
-                "y1": self.y,
-                "x2": new_x,
-                "y2": new_y,
-                "color": self.pen_color,
-                "width": self.pen_width,
-            })
+            self._ops.append(
+                {
+                    "type": "line",
+                    "x1": self.x,
+                    "y1": self.y,
+                    "x2": new_x,
+                    "y2": new_y,
+                    "color": self.pen_color,
+                    "width": self.pen_width,
+                }
+            )
         else:
-            self._ops.append({
-                "type": "move",
-                "x1": self.x,
-                "y1": self.y,
-                "x2": new_x,
-                "y2": new_y,
-            })
+            self._ops.append(
+                {
+                    "type": "move",
+                    "x1": self.x,
+                    "y1": self.y,
+                    "x2": new_x,
+                    "y2": new_y,
+                }
+            )
         self.x = new_x
         self.y = new_y
 
@@ -174,9 +184,11 @@ def _build_html(ops, background, title):
     ops_json = json.dumps(ops)
     safe_title = title.replace("<", "").replace(">", "")
     # The page draws each step one-by-one so kids see the order of instructions.
-    return _TEMPLATE.replace("__TITLE__", safe_title) \
-                    .replace("__BG__", background) \
-                    .replace("__OPS__", ops_json)
+    return (
+        _TEMPLATE.replace("__TITLE__", safe_title)
+        .replace("__BG__", background)
+        .replace("__OPS__", ops_json)
+    )
 
 
 _TEMPLATE = r"""<!doctype html>

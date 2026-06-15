@@ -4,6 +4,7 @@
 
 # --- this little block helps Python find our drawing helper ---
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # --------------------------------------------------------------
 from kidturtle import Turtle
@@ -19,7 +20,7 @@ for spin in range(12):
         t.forward(140)
         t.right(90)
     # After each square, turn a little before drawing the next one.
-    t.right(30)       # 12 squares × 30 degrees = a full 360 spin!
+    t.right(30)  # 12 squares × 30 degrees = a full 360 spin!
 
 t.show("Spinning Squares")
 

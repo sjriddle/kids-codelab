@@ -109,11 +109,18 @@ select, .btn, input[type=text] {
   padding: 8px 12px; cursor: pointer; color: var(--ink);
 }
 
-.btn.run {
-  font-family: var(--font-fun); font-size: 1.3rem; border: none; color: #5a3d00;
-  background: #ffb703; box-shadow: 0 4px 0 #d99400; padding: 12px 30px; flex: 1;
+/* Run and Reset share size, padding, border width, and shadow so they line up;
+   only the fill differs (Run = filled green primary, Reset = outlined secondary). */
+.btn.run, .btn.reset {
+  font-family: var(--font-fun); font-size: 1.2rem; padding: 11px 26px;
+  border: 3px solid transparent; box-shadow: 0 4px 0 #179653;
 }
-.btn.run:active { transform: translateY(3px); box-shadow: none; }
+.btn.run { color: #fff; background: #1eb866; border-color: #1eb866; flex: 1; }
+.btn.reset {
+  flex: 0 0 auto; color: var(--ink); background: #fff;
+  border-color: var(--purple); box-shadow: 0 4px 0 #b39ae0;
+}
+.btn.run:active, .btn.reset:active { transform: translateY(3px); box-shadow: none; }
 .btn.small { padding: 6px 12px; font-size: .95rem; }
 .auto {
   font-size: .95rem; color: #6b5b95; display: flex; align-items: center;
@@ -270,7 +277,8 @@ body.dark select, body.dark .btn, body.dark input[type=text],
 body.dark .icon-btn, body.dark .dpad button,
 body.dark .knob select, body.dark .knob input[type=text],
 body.dark .options-panel { background: #241f3a; color: #e9e2ff; }
-body.dark .btn.run { background: #ffb703; color: #5a3d00; }
+body.dark .btn.run { background: #1eb866; color: #fff; }
+body.dark .btn.reset { box-shadow: 0 4px 0 #4a3f73; }
 body.dark .chip, body.dark .knob .knob-val { background: #38315a; color: #e9e2ff; }
 body.dark .goal { background: #3a2f12; border-color: #c89a2a; color: #ffd874; }
 body.dark .goal.solved { background: #123726; border-color: #0a9c73; color: #79f0bd; }
